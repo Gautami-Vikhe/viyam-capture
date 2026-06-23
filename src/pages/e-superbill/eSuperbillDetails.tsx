@@ -39,15 +39,15 @@ const ESuperbillDetails = () => {
           {/* Page Header */}
           <div className="d-flex align-items-center justify-content-between gap-2 mb-4 flex-wrap">
             <div className="breadcrumb-arrow">
-              <h4 className="mb-1">eSuperbill Details</h4>
+              <h4 className="mb-1">E-Superbill Details</h4>
               <ol className="breadcrumb m-0 py-0">
                 <li className="breadcrumb-item">
                   <Link to={all_routes.dashboard}>Home</Link>
                 </li>
                 <li className="breadcrumb-item">
-                  <Link to={all_routes.eSuperbillList}>eSuperbills</Link>
+                  <Link to={all_routes.eSuperbillList}>E-Superbills</Link>
                 </li>
-                <li className="breadcrumb-item active">eSuperbill Details</li>
+                <li className="breadcrumb-item active">E-Superbill Details</li>
               </ol>
             </div>
             <Link
@@ -55,7 +55,7 @@ const ESuperbillDetails = () => {
               className="fw-medium d-flex align-items-center"
             >
               <i className="ti ti-arrow-left me-1" />
-              Back to eSuperbills
+              Back to E-Superbills
             </Link>
           </div>
 

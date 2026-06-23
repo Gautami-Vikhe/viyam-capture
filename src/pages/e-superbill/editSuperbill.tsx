@@ -6,28 +6,25 @@ import CommonSelect, { type Option } from "../../components/common-select/common
 import CommonMultiSelect from "../../components/common-select/commonMultiSelect";
 import { CPTCodes, ICDCodes } from "../../core/json/icdCptOptions";
 
-const ProviderOptions = [
-  { value: "andrew_clark", label: "Dr. Andrew Clark" },
-  { value: "katherine_brooks", label: "Dr. Katherine Brooks" },
-  { value: "benjamin_harris", label: "Dr. Benjamin Harris" },
+type PatientOption = { value: string; label: string; dob: string; mrn: string; providerCode: string };
+
+const AllPatients: PatientOption[] = [
+  { value: "p1", label: "John Doe", dob: "02/22/2026", mrn: "MRN10234", providerCode: "andrew_clark" },
+  { value: "p2", label: "Mary Smith", dob: "09/23/1990", mrn: "MRN10235", providerCode: "andrew_clark" },
+  { value: "p3", label: "Robert Johnson", dob: "01/30/1978", mrn: "MRN10236", providerCode: "katherine_brooks" },
+  { value: "p4", label: "Linda Williams", dob: "07/15/1982", mrn: "MRN10237", providerCode: "katherine_brooks" },
+  { value: "p5", label: "Michael Brown", dob: "11/02/1995", mrn: "MRN10238", providerCode: "benjamin_harris" },
+  { value: "p6", label: "Patricia Davis", dob: "03/19/1988", mrn: "MRN10239", providerCode: "benjamin_harris" },
+  { value: "p7", label: "John Doe", dob: "05/14/1979", mrn: "MRN10299", providerCode: "katherine_brooks" },
 ];
 
-type PatientOption = { value: string; label: string; dob: string; mrn: string };
-
-const PatientsByProvider: Record<string, PatientOption[]> = {
-  andrew_clark: [
-    { value: "p1", label: "John Doe", dob: "1985-04-12", mrn: "MRN10234" },
-    { value: "p2", label: "Mary Smith", dob: "1990-09-23", mrn: "MRN10235" },
-  ],
-  katherine_brooks: [
-    { value: "p3", label: "Robert Johnson", dob: "1978-01-30", mrn: "MRN10236" },
-    { value: "p4", label: "Linda Williams", dob: "1982-07-15", mrn: "MRN10237" },
-  ],
-  benjamin_harris: [
-    { value: "p5", label: "Michael Brown", dob: "1995-11-02", mrn: "MRN10238" },
-    { value: "p6", label: "Patricia Davis", dob: "1988-03-19", mrn: "MRN10239" },
-  ],
+const ProvidersByCode: Record<string, { value: string; label: string }> = {
+  andrew_clark: { value: "andrew_clark", label: "Dr. Andrew Clark" },
+  katherine_brooks: { value: "katherine_brooks", label: "Dr. Katherine Brooks" },
+  benjamin_harris: { value: "benjamin_harris", label: "Dr. Benjamin Harris" },
 };
+
+const ProviderOptions = Object.values(ProvidersByCode);
 
 const FacilityOptions = [
   { value: "facility1", label: "City Medical Center" },
@@ -44,28 +41,35 @@ const VisitTypeOptions = [
   { value: "telehealth", label: "Telehealth" },
 ];
 
-const EditSuperbill = () => {
-  const [selectedProvider, setSelectedProvider] = useState<string>("andrew_clark");
-  const [patientOptions, setPatientOptions] = useState<PatientOption[]>(
-    PatientsByProvider["andrew_clark"]
-  );
-  const [selectedPatient, setSelectedPatient] = useState<PatientOption | null>(
-    PatientsByProvider["andrew_clark"][0]
-  );
-  const [isHospice, setIsHospice] = useState(false);
+// Dropdown shows Name + last4 MRN + DOB
+const PatientDropdownOptions = AllPatients.map((p) => ({
+  value: p.value,
+  label: `${p.label} (${p.mrn.slice(-4)}) (${p.dob})`,
+}));
 
-  const handleProviderChange = (option: Option | null) => {
-    const providerValue = option?.value || "";
-    setSelectedProvider(providerValue);
-    setPatientOptions(PatientsByProvider[providerValue] || []);
-    setSelectedPatient(null);
-  };
+// Pre-selected patient for edit (mock — would come from API)
+const preSelectedPatient = AllPatients[0];
+
+const EditSuperbill = () => {
+  const [selectedPatient, setSelectedPatient] = useState<PatientOption | null>(preSelectedPatient);
+  const [isHospice, setIsHospice] = useState(false);
 
   const handlePatientChange = (option: Option | null) => {
     if (!option) { setSelectedPatient(null); return; }
-    const found = patientOptions.find((p) => p.value === option.value) || null;
+    const found = AllPatients.find((p) => p.value === option.value) || null;
     setSelectedPatient(found);
   };
+
+  const linkedProvider = selectedPatient
+    ? ProvidersByCode[selectedPatient.providerCode]
+    : null;
+
+  const selectedPatientDisplay: Option | undefined = selectedPatient
+    ? {
+        value: selectedPatient.value,
+        label: `${selectedPatient.label} (${selectedPatient.mrn.slice(-4)}) (${selectedPatient.dob})`,
+      }
+    : undefined;
 
   return (
     <>
@@ -98,35 +102,36 @@ const EditSuperbill = () => {
             <div className="card mb-0">
               <div className="card-body p-4">
 
-                {/* Row 1: Provider & Patient — 2 columns */}
+                {/* Row 1: Patient & Provider — 2 columns */}
                 <div className="row g-3">
+                  <div className="col-md-6">
+                    <label className="form-label">
+                      Patient Name<span className="text-danger ms-1">*</span>
+                    </label>
+                    <CommonSelect
+                      options={PatientDropdownOptions}
+                      className="select"
+                      placeholder="Search and select patient"
+                      onChange={handlePatientChange}
+                      key={selectedPatient?.value || "patient-empty"}
+                      defaultValue={selectedPatientDisplay}
+                    />
+                  </div>
                   <div className="col-md-6">
                     <label className="form-label">
                       Provider Name<span className="text-danger ms-1">*</span>
                     </label>
                     <CommonSelect
                       options={ProviderOptions}
-                      defaultValue={ProviderOptions[0]}
                       className="select"
-                      placeholder="Select provider"
-                      onChange={handleProviderChange}
-                    />
-                  </div>
-                  <div className="col-md-6">
-                    <label className="form-label">
-                      Patient Name<span className="text-danger ms-1">*</span>
-                    </label>
-                    <CommonSelect
-                      options={patientOptions}
-                      defaultValue={patientOptions[0]}
-                      className="select"
-                      placeholder="Select a patient"
-                      onChange={handlePatientChange}
+                      placeholder={selectedPatient ? "" : "Select a patient first"}
+                      key={linkedProvider?.value || "provider-empty"}
+                      defaultValue={linkedProvider || undefined}
                     />
                   </div>
                 </div>
 
-                {/* Row 2: Patient Info (auto-populated) — 2 columns, fully aligned */}
+                {/* Row 2: DOB & MRN — read only, auto-populated */}
                 {selectedPatient && (
                   <div className="row g-3 mt-1">
                     <div className="col-md-6">
@@ -171,7 +176,7 @@ const EditSuperbill = () => {
                   </div>
                 </div>
 
-                {/* Row 4: Visit Type & Hospice checkbox — 2 columns */}
+                {/* Row 4: Visit Type & Hospice — 2 columns */}
                 <div className="row g-3 mt-1">
                   <div className="col-md-6">
                     <label className="form-label">
