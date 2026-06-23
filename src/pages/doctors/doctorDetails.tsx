@@ -27,12 +27,12 @@ const DoctorDetails = () => {
             <div className="card-body py-3">
               <div className="d-flex align-items-center gap-4 flex-wrap">
                 <div className="flex-shrink-0">
-                  <img
-                    src="/assets/img/doctors/doctor-01.jpg"
-                    alt="provider"
-                    className="rounded-circle"
-                    style={{ width: "80px", height: "80px", objectFit: "cover" }}
-                  />
+                  <span
+                    className="avatar bg-primary-transparent text-primary rounded-circle d-inline-flex align-items-center justify-content-center flex-shrink-0"
+                    style={{ width: "80px", height: "80px", fontSize: "32px" }}
+                  >
+                    <i className="ti ti-stethoscope" />
+                  </span>
                 </div>
                 <div className="flex-grow-1">
                   <div className="d-flex align-items-center gap-3 flex-wrap">
