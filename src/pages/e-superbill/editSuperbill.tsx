@@ -44,7 +44,7 @@ const VisitTypeOptions = [
 // Dropdown shows Name + last4 MRN + DOB
 const PatientDropdownOptions = AllPatients.map((p) => ({
   value: p.value,
-  label: `${p.label} (${p.mrn.slice(-4)}) (${p.dob})`,
+  label: p.label,
 }));
 
 // Pre-selected patient for edit (mock — would come from API)
