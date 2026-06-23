@@ -225,7 +225,7 @@ const EditSuperbill = () => {
                   <div className="col-md-6">
                     <label className="form-label">
                       ICD Codes<span className="text-danger ms-1">*</span>
-                      <span className="text-muted fs-12 ms-2">(Select 1 to 11)</span>
+                      <span className="text-muted fs-12 ms-2">(Select 1 to 12)</span>
                     </label>
                     <CommonMultiSelect
                       options={ICDCodes}
